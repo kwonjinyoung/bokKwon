@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Docker 실행 스크립트 for 뽐뿌 자동 댓글 봇
+# Docker 실행 스크립트 for 동행복권 로또 자동 구매 봇
 
-echo "🐳 뽐뿌 자동 댓글 봇 Docker 실행 스크립트"
+echo "🎲 동행복권 로또 자동 구매 봇 Docker 실행 스크립트"
 echo "================================================"
 
 # .env 파일 확인
@@ -39,6 +39,7 @@ case $choice in
         echo "🚀 백그라운드에서 실행합니다..."
         docker-compose up -d --build
         echo "✅ 컨테이너가 백그라운드에서 실행 중입니다."
+        echo "📅 스케줄: 매주 토요일 오후 5시 30분 자동 실행"
         echo "📊 상태 확인: docker-compose ps"
         echo "📋 로그 확인: docker-compose logs -f"
         ;;
@@ -48,7 +49,7 @@ case $choice in
         ;;
     3)
         echo "🧪 테스트 모드로 실행합니다..."
-        docker-compose run --rm ppomppu-bot ./main test
+        docker-compose run --rm dhlottery-lotto-bot ./dhlottery-bot test
         ;;
     4)
         echo "⏹️ 컨테이너를 중지합니다..."

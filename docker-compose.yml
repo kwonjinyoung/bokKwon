@@ -1,9 +1,9 @@
 services:
-  ppomppu-bot:
+  dhlottery-lotto-bot:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ppomppu-auto-comment-bot
+    container_name: dhlottery-auto-lotto-bot
     restart: unless-stopped
     
     # 환경 변수 설정
@@ -17,8 +17,6 @@ services:
     volumes:
       # 스크린샷 저장을 위한 볼륨
       - ./screenshots:/app/screenshots
-      # 댓글 기록 파일 저장을 위한 볼륨
-      - ./commented_posts.json:/app/commented_posts.json
       # 로그 저장을 위한 볼륨 (선택사항)
       - ./logs:/app/logs
     
@@ -34,7 +32,7 @@ services:
     
     # 네트워크 설정 (필요시)
     # networks:
-    #   - ppomppu-network
+    #   - dhlottery-network
     
     # 로그 설정
     logging:
@@ -45,7 +43,7 @@ services:
     
     # 헬스체크 (Dockerfile에서 정의된 것을 오버라이드)
     healthcheck:
-      test: ["CMD", "pgrep", "-f", "main"]
+      test: ["CMD", "pgrep", "-f", "dhlottery-bot"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -53,7 +51,7 @@ services:
 
 # 네트워크 정의 (필요시)
 # networks:
-#   ppomppu-network:
+#   dhlottery-network:
 #     driver: bridge
 
 # 볼륨 정의 (영구 저장이 필요한 경우)

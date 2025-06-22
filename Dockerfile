@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # 바이너리 빌드 (정적 링크)
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o dhlottery-bot .
 
 # 실행 스테이지 - Ubuntu 기반 (Playwright 브라우저 지원)
 FROM ubuntu:22.04
@@ -57,10 +57,10 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # 빌드된 바이너리 복사
-COPY --from=builder /app/main .
+COPY --from=builder /app/dhlottery-bot .
 
 # 애플리케이션 사용자 생성 (홈 디렉토리 포함)
-RUN useradd -m -s /bin/bash appuser
+RUN useradd -m -s /bin/bash lottouser
 
 # Playwright 브라우저 설치 (root 권한으로)
 RUN npx playwright install chromium
@@ -71,14 +71,14 @@ RUN mkdir -p screenshots
 
 # Playwright 브라우저 디렉토리 생성 및 권한 설정
 RUN mkdir -p /ms-playwright
-RUN chown -R appuser:appuser /ms-playwright
+RUN chown -R lottouser:lottouser /ms-playwright
 
 # 권한 설정
-RUN chown -R appuser:appuser /app
-RUN chown -R appuser:appuser /home/appuser
+RUN chown -R lottouser:lottouser /app
+RUN chown -R lottouser:lottouser /home/lottouser
 
 # 사용자 전환
-USER appuser
+USER lottouser
 
 # Playwright 환경 변수 설정
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
@@ -88,7 +88,7 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 # 헬스체크 추가
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD pgrep -f main || exit 1
+    CMD pgrep -f dhlottery-bot || exit 1
 
 # 애플리케이션 실행
-CMD ["./main"] 
+CMD ["./dhlottery-bot"] 

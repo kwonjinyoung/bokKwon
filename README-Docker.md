@@ -1,12 +1,13 @@
-# 🐳 뽐뿌 자동 댓글 봇 Docker 가이드
+# 🎲 동행복권 로또 자동 구매 봇 Docker 가이드
 
-이 가이드는 뽐뿌 자동 댓글 봇을 Docker 환경에서 실행하는 방법을 설명합니다.
+이 가이드는 동행복권 로또 자동 구매 봇을 Docker 환경에서 실행하는 방법을 설명합니다.
 
 ## 📋 사전 요구사항
 
 - Docker 및 Docker Compose 설치
 - Ubuntu 20.04 이상 권장
-- 최소 1GB RAM, 1GB 디스크 공간
+- 최소 1GB RAM, 2GB 디스크 공간
+- 동행복권 계정
 
 ## 🚀 빠른 시작
 
@@ -16,15 +17,19 @@
 # .env 파일 생성
 cp .env.example .env
 
-# .env 파일 편집 (뽐뿌 로그인 정보 입력)
+# .env 파일 편집 (동행복권 로그인 정보 입력)
 nano .env
 ```
 
 `.env` 파일 예시:
 ```
-PPOMPPU_ID=your_actual_id
-PPOMPPU_PW=your_actual_password
-TZ=Asia/Seoul
+# 동행복권 로그인 정보 (필수)
+DHLOTTERY_ID=your_actual_id
+DHLOTTERY_PW=your_actual_password
+
+# 로또 구매 설정
+# 매주 토요일 오후 5시 30분에 자동 실행됩니다
+# 구매 수량: 5장 (자동번호)
 ```
 
 ### 2. Docker 실행
@@ -43,7 +48,7 @@ docker-compose up -d --build
 docker-compose up --build
 
 # 테스트 모드 실행
-docker-compose run --rm ppomppu-bot ./main test
+docker-compose run --rm dhlottery-lotto-bot ./dhlottery-bot test
 ```
 
 ## 📊 컨테이너 관리
@@ -77,16 +82,22 @@ docker-compose up -d --build --force-recreate
 ## 📁 파일 구조
 
 ```
-ppomppu/
+dhlottery-lotto-bot/
 ├── Dockerfile              # Docker 이미지 빌드 설정
 ├── docker-compose.yml      # Docker Compose 설정
 ├── .dockerignore           # Docker 빌드 시 제외할 파일
 ├── .env.example            # 환경 변수 예시
 ├── docker-run.sh           # Docker 실행 스크립트
 ├── screenshots/            # 스크린샷 저장 폴더 (자동 생성)
-├── logs/                   # 로그 저장 폴더 (자동 생성)
-└── commented_posts.json    # 댓글 기록 파일 (자동 생성)
+└── logs/                   # 로그 저장 폴더 (자동 생성)
 ```
+
+## 📅 스케줄링
+
+- **자동 실행**: 매주 토요일 오후 5시 30분 (서울 시간 기준)
+- **로또 마감**: 토요일 오후 8시까지이므로, 여유있게 5시 30분에 구매
+- **구매 수량**: 자동번호 5장
+- **스크린샷**: 각 단계별로 자동 저장
 
 ## 🔧 고급 설정
 
@@ -98,11 +109,11 @@ ppomppu/
 deploy:
   resources:
     limits:
-      memory: 2G        # 메모리 제한
-      cpus: '1.0'       # CPU 제한
+      memory: 1G        # 메모리 제한
+      cpus: '0.5'       # CPU 제한
     reservations:
-      memory: 1G        # 최소 메모리
-      cpus: '0.5'       # 최소 CPU
+      memory: 512M      # 최소 메모리
+      cpus: '0.25'      # 최소 CPU
 ```
 
 ### 로그 설정 변경
@@ -111,28 +122,23 @@ deploy:
 logging:
   driver: "json-file"
   options:
-    max-size: "50m"     # 로그 파일 최대 크기
-    max-file: "5"       # 보관할 로그 파일 수
+    max-size: "10m"     # 로그 파일 최대 크기
+    max-file: "3"       # 보관할 로그 파일 수
 ```
 
 ### 시간대 변경
 
-`.env` 파일에서 시간대를 변경할 수 있습니다:
-```
-TZ=Asia/Tokyo
-TZ=America/New_York
-TZ=Europe/London
-```
+컨테이너는 기본적으로 Asia/Seoul로 설정되어 있습니다.
 
 ## 🐛 문제 해결
 
 ### 1. 브라우저 실행 오류
 ```bash
 # 컨테이너 내부에서 디버깅
-docker-compose exec ppomppu-bot /bin/bash
+docker-compose exec dhlottery-lotto-bot /bin/bash
 
 # 또는 새 컨테이너로 디버깅
-docker-compose run --rm ppomppu-bot /bin/bash
+docker-compose run --rm dhlottery-lotto-bot /bin/bash
 ```
 
 ### 2. 권한 오류
@@ -155,24 +161,32 @@ docker stats
 ```bash
 # 컨테이너 네트워크 확인
 docker network ls
-docker-compose exec ppomppu-bot ping google.com
+docker-compose exec dhlottery-lotto-bot ping dhlottery.co.kr
 ```
+
+### 5. 로그인 실패
+- 동행복권 계정 정보가 올바른지 확인
+- 계정이 잠겨있지 않은지 확인
+- 2단계 인증이 설정되어 있지 않은지 확인
 
 ## 📈 모니터링
 
 ### 컨테이너 상태 모니터링
 ```bash
 # 실시간 리소스 사용량
-docker stats ppomppu-auto-comment-bot
+docker stats dhlottery-auto-lotto-bot
 
 # 헬스체크 상태 확인
-docker inspect ppomppu-auto-comment-bot | grep -A 10 Health
+docker inspect dhlottery-auto-lotto-bot | grep -A 10 Health
 ```
 
 ### 로그 분석
 ```bash
 # 에러 로그만 필터링
 docker-compose logs | grep -i error
+
+# 성공 로그 확인
+docker-compose logs | grep -i "로또 구매 완료"
 
 # 특정 시간대 로그 확인
 docker-compose logs --since="2024-01-01T09:00:00"
@@ -198,18 +212,12 @@ docker-compose build --no-cache
 ## 🛡️ 보안 고려사항
 
 1. **환경 변수 보안**: `.env` 파일을 Git에 커밋하지 마세요
-2. **컨테이너 권한**: 애플리케이션은 non-root 사용자로 실행됩니다
-3. **네트워크 격리**: 필요시 Docker 네트워크를 분리하세요
-4. **로그 보안**: 로그에 민감한 정보가 포함되지 않도록 주의하세요
+2. **계정 보안**: 동행복권 계정 정보를 안전하게 관리하세요
+3. **네트워크 보안**: 필요시 방화벽 설정을 확인하세요
 
-## 📞 지원
+## ⚖️ 법적 고지
 
-문제가 발생하면 다음을 확인해주세요:
-
-1. Docker 및 Docker Compose 버전
-2. 시스템 리소스 상태
-3. 컨테이너 로그
-4. 네트워크 연결 상태
+이 봇은 교육 및 개인 사용 목적으로 제작되었습니다. 상업적 이용이나 대량 구매는 동행복권 이용약관에 위배될 수 있습니다. 사용자는 관련 법규와 이용약관을 준수할 책임이 있습니다.
 
 ```bash
 # 시스템 정보 수집
