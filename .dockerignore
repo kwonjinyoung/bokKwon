@@ -1,0 +1,65 @@
+# Git 관련 파일
+.git
+.gitignore
+.gitattributes
+
+# Docker 관련 파일
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 환경 설정 파일 (보안상 제외, 런타임에 마운트)
+.env
+.env.local
+.env.production
+
+# 로그 파일
+*.log
+logs/
+
+# 임시 파일
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE 설정 파일
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 빌드 결과물
+main
+ppomppu-auto-comment
+
+# 런타임 생성 파일
+screenshots/
+commented_posts.json
+
+# Go 관련
+vendor/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 테스트 관련
+*.test
+*.out
+coverage.txt
+
+# 문서 파일
+README.md
+*.md
+
+# 압축 파일
+*.tar.gz
+*.zip
+*.rar
+
+# 기타
+node_modules/
+npm-debug.log* 
