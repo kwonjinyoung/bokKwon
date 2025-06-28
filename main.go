@@ -102,8 +102,8 @@ func main() {
 	// 크론 스케줄러 설정 (서울 시간 기준, 매주 토요일 오후 8시)
 	c := cron.New(cron.WithLocation(location))
 
-	// 매주 토요일 오후 5시 30분에 실행 (로또 마감 전)
-	c.AddFunc("30 17 * * SAT", func() {
+	// 매주 일요일 오전 6시 10분에 실행
+	c.AddFunc("10 6 * * SUN", func() {
 		log.Println("자동 로또 구매 작업을 시작합니다...")
 		err := runLottoBuyBot()
 		if err != nil {
@@ -112,7 +112,7 @@ func main() {
 	})
 
 	log.Println("동행복권 로또 자동 구매 봇이 시작되었습니다.")
-	log.Printf("스케줄: 서울 시간 기준 매주 토요일 오후 5시 30분")
+	log.Printf("스케줄: 서울 시간 기준 매주 일요일 오전 6시 10분")
 	log.Printf("현재 서울 시간: %s", time.Now().In(location).Format("2006-01-02 15:04:05"))
 
 	// 시작 시 즉시 한 번 실행 (테스트용)
