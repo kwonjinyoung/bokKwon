@@ -22,7 +22,7 @@ type UserAgent struct {
 }
 
 const (
-	LOGIN_URL = "https://dhlottery.co.kr/user.do?method=login&returnUrl="
+	LOGIN_URL = "https://www.dhlottery.co.kr/login"
 	LOTTO_URL = "https://el.dhlottery.co.kr/game/TotalGame.jsp?LottoId=LO40"
 )
 
@@ -261,8 +261,8 @@ func login(page playwright.Page) error {
 		log.Printf("스크린샷 저장 실패: %v", err)
 	}
 
-	// 사람처럼 천천히 입력
-	err = humanLikeType(page, "#userId", os.Getenv("DHLOTTERY_ID"))
+	// 사람처럼 천천히 입력 (새로운 사이트 구조에 맞게 수정)
+	err = humanLikeType(page, "#inpUserId", os.Getenv("DHLOTTERY_ID"))
 	if err != nil {
 		return fmt.Errorf("아이디 입력 실패: %v", err)
 	}
@@ -270,7 +270,7 @@ func login(page playwright.Page) error {
 	// 잠시 대기
 	randomDelay(500, 1500)
 
-	err = humanLikeType(page, "input[name='password']", os.Getenv("DHLOTTERY_PW"))
+	err = humanLikeType(page, "#inpUserPswdEncn", os.Getenv("DHLOTTERY_PW"))
 	if err != nil {
 		return fmt.Errorf("비밀번호 입력 실패: %v", err)
 	}
@@ -286,7 +286,16 @@ func login(page playwright.Page) error {
 	// 잠시 대기 후 로그인 버튼 클릭
 	randomDelay(1000, 2000)
 
-	err = page.Click("a.btn_common.lrg.blu")
+	// 로그인 버튼이 나타날 때까지 대기
+	_, err = page.WaitForSelector("#btnLogin", playwright.PageWaitForSelectorOptions{
+		State:   playwright.WaitForSelectorStateVisible,
+		Timeout: playwright.Float(10000),
+	})
+	if err != nil {
+		log.Printf("로그인 버튼 대기 실패: %v", err)
+	}
+
+	err = page.Click("#btnLogin")
 	if err != nil {
 		return fmt.Errorf("로그인 버튼 클릭 실패: %v", err)
 	}
@@ -548,8 +557,8 @@ func buyLotto(page playwright.Page) error {
 
 			randomDelay(2000, 3000)
 
-			// 로그인 수행
-			err = humanLikeType(newPage, "#userId", os.Getenv("DHLOTTERY_ID"))
+			// 로그인 수행 (새로운 사이트 구조에 맞게 수정)
+			err = humanLikeType(newPage, "#inpUserId", os.Getenv("DHLOTTERY_ID"))
 			if err != nil {
 				log.Printf("아이디 입력 실패: %v", err)
 				newContext.Close()
@@ -558,7 +567,7 @@ func buyLotto(page playwright.Page) error {
 
 			randomDelay(500, 1500)
 
-			err = humanLikeType(newPage, "input[name='password']", os.Getenv("DHLOTTERY_PW"))
+			err = humanLikeType(newPage, "#inpUserPswdEncn", os.Getenv("DHLOTTERY_PW"))
 			if err != nil {
 				log.Printf("비밀번호 입력 실패: %v", err)
 				newContext.Close()
@@ -567,7 +576,16 @@ func buyLotto(page playwright.Page) error {
 
 			randomDelay(1000, 2000)
 
-			err = newPage.Click("a.btn_common.lrg.blu")
+			// 로그인 버튼이 나타날 때까지 대기
+			_, err = newPage.WaitForSelector("#btnLogin", playwright.PageWaitForSelectorOptions{
+				State:   playwright.WaitForSelectorStateVisible,
+				Timeout: playwright.Float(10000),
+			})
+			if err != nil {
+				log.Printf("로그인 버튼 대기 실패: %v", err)
+			}
+
+			err = newPage.Click("#btnLogin")
 			if err != nil {
 				log.Printf("로그인 버튼 클릭 실패: %v", err)
 				newContext.Close()
